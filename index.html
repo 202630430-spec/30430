@@ -1,354 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Master Guide</title>
-    <style>
-        :root {
-            --bg-dark: #121212;
-            --bg-card: #1e1e1e;
-            --accent-green: #55ff55;
-            --accent-green-dark: #2d862d;
-            --text-light: #f0f0f0;
-            --text-muted: #aaa;
-            --border-color: #333;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-        }
-
-        header {
-            background-color: #050505;
-            border-bottom: 3px solid var(--accent-green-dark);
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        header h1 {
-            color: var(--accent-green);
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px #000;
-        }
-
-        header p {
-            color: var(--text-muted);
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #1a1a1a;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            color: var(--accent-green);
-            background-color: #252525;
-        }
-
-        .nav-btn.active {
-            color: var(--accent-green);
-            border-bottom: 3px solid var(--accent-green);
-            background-color: var(--bg-card);
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: transform 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-green-dark);
-        }
-
-        .card h3 {
-            color: var(--accent-green);
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        code {
-            background-color: #000;
-            color: #ff5555;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background-color: #000;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        ul {
-            margin-left: 1.2rem;
-            margin-top: 0.5rem;
-        }
-
-        li {
-            margin-bottom: 0.3rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            background-color: #050505;
-            color: var(--text-muted);
-            margin-top: 3rem;
-            border-top: 1px solid var(--border-color);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Voxel Game Demo</title>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    #crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 10px; height: 10px;
+      margin: -5px 0 0 -5px;
+      pointer-events: none;
+    }
+    #crosshair::before, #crosshair::after {
+      content: ''; position: absolute; background: white;
+    }
+    #crosshair::before { left: 4px; top: 0; width: 2px; height: 10px; }
+    #crosshair::after { left: 0; top: 4px; width: 10px; height: 2px; }
+    #instructions {
+      position: absolute; top: 10px; left: 10px;
+      color: white; background: rgba(0,0,0,0.6);
+      padding: 10px; border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
+  <div id="crosshair"></div>
+  <div id="instructions">Click screen to play | WASD = Move | Space = Jump | Click = Break/Place</div>
 
-    <header>
-        <h1>Minecraft Knowledge Hub</h1>
-        <p>Your ultimate companion guide for commands, blocks, structures, and automated farms.</p>
-    </header>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
 
-    <nav>
-        <button class="nav-btn active" onclick="openTab(event, 'commands')">Commands</button>
-        <button class="nav-btn" onclick="openTab(event, 'blocks')">Blocks & Uses</button>
-        <button class="nav-btn" onclick="openTab(event, 'structures')">Structures</button>
-        <button class="nav-btn" onclick="openTab(event, 'farms')">Material Farms</button>
-    </nav>
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    <div class="container">
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040));
 
-        <!-- COMMANDS TAB -->
-        <section id="commands" class="tab-content active">
-            <h2>Essential Commands</h2>
-            <p>Commands allow you to alter the world, manage inventory, and change game rules.</p>
-            <br>
-            <input type="text" id="commandSearch" class="search-bar" onkeyup="filterCards('commands')" placeholder="Search commands...">
-            
-            <div class="grid">
-                <div class="card">
-                    <h3><code>/tp [target] [destination]</code></h3>
-                    <p>Teleports a player or entity to a specific location or another player.</p>
-                    <p><strong>Example:</strong> <code>/tp @p ~ ~10 ~</code> (Teleports you 10 blocks up)</p>
-                </div>
-                <div class="card">
-                    <h3><code>/give [player] [item] [amount]</code></h3>
-                    <p>Gives a specified player an item in the requested quantity.</p>
-                    <p><strong>Example:</strong> <code>/give @p diamond 64</code></p>
-                </div>
-                <div class="card">
-                    <h3><code>/gamerule [rule] [value]</code></h3>
-                    <p>Modifies core gameplay mechanics in your world.</p>
-                    <p><strong>Example:</strong> <code>/gamerule keepInventory true</code></p>
-                </div>
-                <div class="card">
-                    <h3><code>/locate structure [name]</code></h3>
-                    <p>Displays the coordinates of the nearest specified structure.</p>
-                    <p><strong>Example:</strong> <code>/locate structure village</code></p>
-                </div>
-                <div class="card">
-                    <h3><code>/time set [day|night|number]</code></h3>
-                    <p>Changes the time of day in the world cycle.</p>
-                    <p><strong>Example:</strong> <code>/time set day</code></p>
-                </div>
-                <div class="card">
-                    <h3><code>/fill [x1 y1 z1] [x2 y2 z2] [block]</code></h3>
-                    <p>Fills a specified 3D area with a chosen block type.</p>
-                    <p><strong>Example:</strong> <code>/fill ~-2 ~-1 ~-2 ~2 ~-1 ~2 stone</code></p>
-                </div>
-            </div>
-        </section>
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshLambertMaterial({ color: 0x55aa55 });
+    const blocks = [];
 
-        <!-- BLOCKS TAB -->
-        <section id="blocks" class="tab-content">
-            <h2>Key Blocks & Their Purposes</h2>
-            <p>Understand special functional blocks to improve crafting, building, and survival.</p>
-            
-            <div class="grid">
-                <div class="card">
-                    <h3>Crafting & Utility Blocks</h3>
-                    <ul>
-                        <li><strong>Crafter:</strong> Automated crafting block powered by Redstone.</li>
-                        <li><strong>Anvil:</strong> Used for repairing items, combining enchantments, and naming objects.</li>
-                        <li><strong>Enchanting Table:</strong> Enhances tools, armor, and weapons using Lapis Lazuli.</li>
-                        <li><strong>Brewing Stand:</strong> Brews potions using Water Bottles and Blaze Powder fuel.</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Redstone Components</h3>
-                    <ul>
-                        <li><strong>Observer:</strong> Detects block update changes and outputs a Redstone pulse.</li>
-                        <li><strong>Hopper:</strong> Transfers items between containers or collects dropped items.</li>
-                        <li><strong>Piston / Sticky Piston:</strong> Pushes (and pulls) blocks when activated by Redstone.</li>
-                        <li><strong>Comparator:</strong> Measures inventory fullness or compares Redstone signal strengths.</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Workstation Blocks</h3>
-                    <ul>
-                        <li><strong>Lectern:</strong> Allows multiple players to read a book; assigns Librarian job to villager.</li>
-                        <li><strong>Blast Furnace:</strong> Smelts ores and metals twice as fast as a standard furnace.</li>
-                        <li><strong>Smoker:</strong> Cooks food items twice as fast as a normal furnace.</li>
-                        <li><strong>Stonecutter:</strong> Simplifies stone block crafting recipes without material waste.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+    for (let x = -5; x <= 5; x++) {
+      for (let z = -5; z <= 5; z++) {
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.set(x, 0, z);
+        scene.add(cube);
+        blocks.push(cube);
+      }
+    }
 
-        <!-- STRUCTURES TAB -->
-        <section id="structures" class="tab-content">
-            <h2>World Structures & Exploration</h2>
-            <p>Key naturally generating structures and the valuable resources found inside them.</p>
+    camera.position.set(0, 2, 5);
 
-            <div class="grid">
-                <div class="card">
-                    <h3>Overworld Structures</h3>
-                    <ul>
-                        <li><strong>Villages:</strong> Safe havens containing resources, beds, and trading options.</li>
-                        <li><strong>Ancient City:</strong> Deep dark ruins containing Swift Sneak enchantments and Wardens.</li>
-                        <li><strong>Ocean Monument:</strong> Underwater structure guarded by Guardians; contains Gold Blocks and Sponge.</li>
-                        <li><strong>Woodland Mansion:</strong> Rare forest building housing Evokers (for Totems of Undying).</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Nether Structures</h3>
-                    <ul>
-                        <li><strong>Nether Fortress:</strong> Essential structure containing Nether Wart and Blaze Rods.</li>
-                        <li><strong>Bastion Remnant:</strong> Piglin stronghold rich in Gold, Ancient Debris, and Pigstep music discs.</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>End Structures</h3>
-                    <ul>
-                        <li><strong>Stronghold:</strong> Underground structure housing the End Portal frame.</li>
-                        <li><strong>End Cities:</strong> Floating towers in the outer End islands; contain Elytra and Shulker Shells.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyW') moveForward = true;
+      if (e.code === 'KeyS') moveBackward = true;
+      if (e.code === 'KeyA') moveLeft = true;
+      if (e.code === 'KeyD') moveRight = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'KeyW') moveForward = false;
+      if (e.code === 'KeyS') moveBackward = false;
+      if (e.code === 'KeyA') moveLeft = false;
+      if (e.code === 'KeyD') moveRight = false;
+    });
 
-        <!-- FARMS TAB -->
-        <section id="farms" class="tab-content">
-            <h2>Material & Automation Farms</h2>
-            <p>Popular farm designs to maximize resource gathering efficiency.</p>
+    document.body.addEventListener('click', () => {
+      document.body.requestPointerLock();
+    });
 
-            <div class="grid">
-                <div class="card">
-                    <h3>Iron Golem Farm</h3>
-                    <p><strong>Materials Needed:</strong> 3 Villagers, 1 Zombie, Water, Lava, Hoppers, Chests.</p>
-                    <p><strong>How it works:</strong> Trapping a Zombie near villagers frightens them into spawning an Iron Golem. Lava kills the golem, and hoppers collect the iron ingots into chests.</p>
-                </div>
-                <div class="card">
-                    <h3>Automatic Sugarcane / Bamboo Farm</h3>
-                    <p><strong>Materials Needed:</strong> Sugarcane, Water, Pistons, Observers, Redstone, Hopper System.</p>
-                    <p><strong>How it works:</strong> Observers detect when the crop grows 3 blocks tall, triggering pistons to break the top two blocks without removing the base plant.</p>
-                </div>
-                <div class="card">
-                    <h3>Mob XP & Drop Tower</h3>
-                    <p><strong>Materials Needed:</strong> Solid blocks, Water buckets, Trapdoors, Hoppers, Slabs.</p>
-                    <p><strong>How it works:</strong> Spawns mobs in a dark overhead chamber. Water currents push them down a 22-block drop shaft, leaving them with minimal HP for easy manual killing and XP gathering.</p>
-                </div>
-                <div class="card">
-                    <h3>Gold & XP Farm (Nether)</h3>
-                    <p><strong>Materials Needed:</strong> Netherrack, Magma blocks, Turtle Eggs, Trapdoors, Hoppers.</p>
-                    <p><strong>How it works:</strong> Built above the Nether roof. Zombified Piglins are lured toward turtle eggs, falling into a collection drop where they yield massive amounts of Gold and XP.</p>
-                </div>
-            </div>
-        </section>
+    document.addEventListener('mousemove', (e) => {
+      if (document.pointerLockElement === document.body) {
+        camera.rotation.y -= e.movementX * 0.002;
+        camera.rotation.x -= e.movementY * 0.002;
+        camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+      }
+    });
 
-    </div>
-
-    <footer>
-        <p>Minecraft Guide Homepage &copy; Created for Minecrafters everywhere.</p>
-    </footer>
-
-    <script>
-        function openTab(evt, tabName) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) {
-                contents[i].classList.remove("active");
-            }
-
-            let buttons = document.getElementsByClassName("nav-btn");
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
-
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        function filterCards(tabId) {
-            let input = document.getElementById('commandSearch');
-            let filter = input.value.toLowerCase();
-            let container = document.getElementById(tabId);
-            let cards = container.getElementsByClassName('card');
-
-            for (let i = 0; i < cards.length; i++) {
-                let cardText = cards[i].innerText || cards[i].textContent;
-                if (cardText.toLowerCase().indexOf(filter) > -1) {
-                    cards[i].style.display = "";
-                } else {
-                    cards[i].style.display = "none";
-                }
-            }
-        }
-    </script>
+    function animate() {
+      requestAnimationFrame(animate);
+      const speed = 0.1;
+      if (moveForward) camera.translateZ(-speed);
+      if (moveBackward) camera.translateZ(speed);
+      if (moveLeft) camera.translateX(-speed);
+      if (moveRight) camera.translateX(speed);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
 </body>
 </html>
